@@ -12,6 +12,7 @@ import Badge from '@material-ui/core/Badge';
 // Styles
 import { Wrapper, StyledButton, StyledAppBar, HeaderTypography } from './App.styles';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
+import RecentPurchases from './Cart/RecentPurchases';
 // Types
 export type CartItemType = {
   id: number;
@@ -29,6 +30,7 @@ const getCheeses = async (): Promise<CartItemType[]> =>
 
 const App = () => {
   const [cartOpen, setCartOpen] = useState(false);
+  const [recentOpen, setRecentOpen] = useState(false);
   const [cartItems, setCartItems] = useState([] as CartItemType[]);
   const { data, isLoading, error } = useQuery<CartItemType[]>(
     'cheeses',
@@ -69,6 +71,12 @@ const App = () => {
     );
   };
 
+  /** Clears the cart. */
+  const clearCart = () => {
+    setCartItems([]);
+    setCartOpen(false);
+  }
+
   if (isLoading) return <LinearProgress />;
   if (error) return <div>Something went wrong ...</div>;
 
@@ -83,7 +91,7 @@ const App = () => {
             justify="space-between"
             alignItems="center"
           >
-            <StyledButton>
+            <StyledButton onClick={() => setRecentOpen(true)}>
               <RestoreIcon />
               <Typography variant="subtitle2">
                 Recent Purchases
@@ -94,7 +102,9 @@ const App = () => {
               Welcome to Patient Zero's Cheeseria
             </HeaderTypography>
 
-            <StyledButton onClick={() => setCartOpen(true)}>
+            <StyledButton onClick={() => setCartOpen(true)}
+              data-cy="cart-button"
+            >
               <Badge
                 badgeContent={getTotalItems(cartItems)}
                 color='error'
@@ -116,6 +126,15 @@ const App = () => {
           cartItems={cartItems}
           addToCart={handleAddToCart}
           removeFromCart={handleRemoveFromCart}
+          clearCartItems={clearCart}
+        />
+      </Drawer>
+      {/* For the recent purchases */}
+      <Drawer anchor='left' open={recentOpen} onClose={() => setRecentOpen(false)}>
+        <RecentPurchases
+          addToCart={handleAddToCart}
+          removeFromCart={handleRemoveFromCart}
+          clearCartItems={clearCart}
         />
       </Drawer>
 

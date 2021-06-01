@@ -8,16 +8,19 @@ type Props = {
   item: CartItemType;
   addToCart: (clickedItem: CartItemType) => void;
   removeFromCart: (id: number) => void;
+  purchased?: boolean;
 };
 
-const CartItem: React.FC<Props> = ({ item, addToCart, removeFromCart }) => (
-  <Wrapper>
-    <div>
-      <h3>{item.title}</h3>
-      <div className='information'>
-        <p>Price: ${item.price}</p>
-        <p>Total: ${(item.amount * item.price).toFixed(2)}</p>
-      </div>
+const CartItem: React.FC<Props> = ({ item, addToCart, removeFromCart, purchased }) => {
+
+  function renderButtons() {
+    // in recently purchased items pane 
+    if (purchased) {
+      return <p>{item.amount}x</p>
+    }
+
+    // in cart pane
+    return (
       <div className='buttons'>
         <Button
           size='small'
@@ -37,9 +40,22 @@ const CartItem: React.FC<Props> = ({ item, addToCart, removeFromCart }) => (
           +
         </Button>
       </div>
-    </div>
-    <img src={item.image} alt={item.title} />
-  </Wrapper>
-);
+    )
+  }
+
+  return (
+    <Wrapper>
+      <div>
+        <h3>{item.title}</h3>
+        <div className='information'>
+          <p>Price: ${item.price}</p>
+          <p>Total: ${(item.amount * item.price).toFixed(2)}</p>
+        </div>
+        {renderButtons()}
+      </div>
+      <img src={item.image} alt={item.title} />
+    </Wrapper>
+  )
+};
 
 export default CartItem;
